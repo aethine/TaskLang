@@ -8,7 +8,7 @@ namespace TaskLang
     public static class Tokenizer
     {
         public static readonly string[] Operators = { "+", "-", "*", "/", "not", "or", "and", "xor"};
-        public static readonly Regex WordPattern = new Regex("[a-zA-Z][a-zA-Z0-9_]*");
+        public static readonly Regex WordPattern = new Regex("^[a-zA-Z][a-zA-Z0-9_]*$");
         public static readonly char[] SpecialChars = { '|', '(', ')', '=', ';' };
 
         public static Token[] LinesToTokens(string[] lines)
