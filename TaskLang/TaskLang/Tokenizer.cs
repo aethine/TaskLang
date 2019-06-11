@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TaskLang
 {
-    static class Tokenizer
+    public static class Tokenizer
     {
         public static readonly string[] Operators = { "+", "-", "*", "/" };
+        public static readonly Regex WordPattern = new Regex("[a-zA-Z][a-zA-Z0-9_]*");
         public static Token[] LinesToTokens(string[] lines)
         {
             List<Token> tokens = new List<Token>();
@@ -64,17 +65,19 @@ namespace TaskLang
             }
             else if (word == "->") return new Token(TokenType.Arrow);
             else if (word == "|") return new Token(TokenType.Group);
+            else if (word == "=") return new Token(TokenType.Assign);
+            else if (word == ";") return new Token(TokenType.Semicolon);
             else if (word == "return") return new Token(TokenType.ReturnKey);
             else if (word == "while") return new Token(TokenType.WhileKey);
             else if (word == "for") return new Token(TokenType.ForKey);
             else if (word == "in") return new Token(TokenType.InKey);
             else if (word == "break") return new Token(TokenType.BreakKey);
             else if (word == "var") return new Token(TokenType.VarKey);
-            else if (word == ";") return new Token(TokenType.Semicolon);
             else
             {
                 int index = Array.IndexOf(Operators, word);
                 if (index >= 0) return new Token(TokenType.Operator, Operators[index]);
+                else if (WordPattern.IsMatch(word)) return new Token(TokenType.Word, word);
                 else return new Token(TokenType.Error, word);
             }
         }

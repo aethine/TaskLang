@@ -1,4 +1,5 @@
 ﻿using System;
+using TaskLang;
 
 namespace TaskLangTest
 {
@@ -6,7 +7,8 @@ namespace TaskLangTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            string[] abc = { @"var x = 100" };
+            foreach (Token t in Tokenizer.LinesToTokens(abc)) Console.WriteLine(t);
         }
     }
 }

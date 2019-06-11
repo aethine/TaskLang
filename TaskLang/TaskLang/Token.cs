@@ -1,6 +1,6 @@
 ﻿namespace TaskLang
 {
-    enum TokenType
+    public enum TokenType
     {
         Number,
         Word,
@@ -8,17 +8,18 @@
         Operator,
         Arrow,
         Group,
+        Assign,
+        Semicolon,
         ReturnKey,
         WhileKey,
         ForKey,
         InKey,
         BreakKey,
         VarKey,
-        Semicolon,
         NewLine,
         Error
     }
-    struct Token
+    public struct Token
     {
         public TokenType Type { get; private set; }
         public string Info { get; private set; }
@@ -27,6 +28,11 @@
         {
             this.Type = Type;
             this.Info = Info;
+        }
+
+        public override string ToString()
+        {
+            return Type.ToString() + (Info == "" ? "" : $":{Info}");
         }
     }
 }
