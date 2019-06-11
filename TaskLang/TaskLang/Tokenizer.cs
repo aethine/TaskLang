@@ -71,7 +71,7 @@ namespace TaskLang
             else if (word.StartsWith("\"") && word.EndsWith("\"")) //TODO: better string parsing
             {
                 //remove surrounding quotes
-                return new Token(TokenType.String, word.Remove(0, 1).Remove(word.Length - 1));
+                return new Token(TokenType.String, word.Remove(word.Length - 1).Remove(0, 1));
             }
             else if (Operators.Contains(word)) return new Token(TokenType.Operator, word);
             else if (word == "->") return new Token(TokenType.Arrow);
@@ -88,6 +88,10 @@ namespace TaskLang
             else if (word == "var") return new Token(TokenType.VarKey);
             else if (word == "if") return new Token(TokenType.IfKey);
             else if (word == "then") return new Token(TokenType.ThenKey);
+            else if (word == "elif") return new Token(TokenType.ElifKey);
+            else if (word == "else") return new Token(TokenType.ElseKey);
+            else if (word == "true") return new Token(TokenType.TrueKey);
+            else if (word == "false") return new Token(TokenType.FalseKey);
             else if (WordPattern.IsMatch(word)) return new Token(TokenType.Word, word);
             else return new Token(TokenType.Error, word);
         }

@@ -20,6 +20,10 @@
         VarKey,
         IfKey,
         ThenKey,
+        ElifKey,
+        ElseKey,
+        TrueKey,
+        FalseKey,
         NewLine,
         Error
     }
