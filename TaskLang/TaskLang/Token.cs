@@ -15,7 +15,8 @@
         BreakKey,
         VarKey,
         Semicolon,
-        NewLine
+        NewLine,
+        Error
     }
     struct Token
     {
