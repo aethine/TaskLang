@@ -10,12 +10,16 @@
         Group,
         Assign,
         Semicolon,
+        LeftParen,
+        RightParen,
         ReturnKey,
         WhileKey,
         ForKey,
         InKey,
         BreakKey,
         VarKey,
+        IfKey,
+        ThenKey,
         NewLine,
         Error
     }

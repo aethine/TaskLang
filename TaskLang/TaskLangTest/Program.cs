@@ -7,7 +7,7 @@ namespace TaskLangTest
     {
         static void Main(string[] args)
         {
-            string[] abc = { @"var x = 100" };
+            string[] abc = { @"var x = (100 + 5) * 6" };
             foreach (Token t in Tokenizer.LinesToTokens(abc)) Console.WriteLine(t);
         }
     }
