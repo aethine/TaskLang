@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using TaskLang.Tokens;
 
-namespace TaskLang
+namespace TaskLang.Tokenizer
 {
     public static class Tokenizer
     {
-        public static readonly string[] Operators = { "+", "-", "*", "/", "not", "or", "and", "xor"};
-        public static readonly Regex WordPattern = new Regex("^[a-zA-Z][a-zA-Z0-9_]*$");
-        public static readonly char[] SpecialChars = { '|', '(', ')', '=', ';' };
+        public static readonly string[] Operators = { "+", "-", "/", "*", "and", "or", "xor", "not" };
+        public static readonly Pattern WordPattern = s => Regex.IsMatch(s, "^[a-zA-Z][a-zA-Z0-9_]*$");
+        public static readonly Pattern NumberPattern = s => double.TryParse(s, out _);
+        public static readonly Pattern StringPattern = s => Regex.IsMatch(s, "^\"([^\"\\\\]+|\\\\.)*\"?$");
+        public static readonly Pattern SymbolPattern = s => Regex.IsMatch(s, @"^[!@#$%^&*()\[\]{}\\|;:<>,/?`~\-=+]+$");
+        public static readonly Pattern[] AllPatterns = { WordPattern, NumberPattern, StringPattern, SymbolPattern };
 
         public static Token[] LinesToTokens(string[] lines)
         {
@@ -24,7 +28,7 @@ namespace TaskLang
             return tokens.ToArray();
         }
         //Removes comments and whitespace
-        static string[] Format(string[] lines)
+        private static string[] Format(string[] lines)
         {
             List<string> result = new List<string>();
             string current = "";
@@ -35,29 +39,42 @@ namespace TaskLang
                     if (c == '#') break; //comment
                     else current += c.ToString();
                 }
-                if(!String.IsNullOrWhiteSpace(current)) result.Add(current);
+                if (!String.IsNullOrWhiteSpace(current)) result.Add(current);
                 current = "";
             }
             return result.ToArray();
         }
         //Converts a single line into an array of tokens
-        static Token[] LineToTokens(string line)
+        private static Token[] LineToTokens(string line)
         {
             List<Token> tokens = new List<Token>();
             string current = "";
+            Pattern cpattern = null;
 
-            foreach(char c in line)
+            for (int x = 0; x < line.Length; x++)
             {
-                if (Char.IsWhiteSpace(c))
+                char c = line[x];
+
+                if (cpattern == null)
                 {
-                    if (!string.IsNullOrWhiteSpace(current)) tokens.Add(WordToToken(current));
-                    current = "";
+                    if (char.IsWhiteSpace(c)) continue;
+                    foreach (Pattern p in AllPatterns)
+                    {
+                        if (p(c.ToString()))
+                        {
+                            cpattern = p;
+                            break;
+                        }
+                    }
+                    if (cpattern == null) tokens.Add(new Token(TokenType.Error, c.ToString()));
+                    else current += c.ToString();
                 }
-                else if (SpecialChars.Contains(c))
+                else if (!cpattern(current + c.ToString()))
                 {
-                    if (!string.IsNullOrWhiteSpace(current)) tokens.Add(WordToToken(current));
-                    tokens.Add(WordToToken(c.ToString()));
+                    tokens.Add(WordToToken(current));
                     current = "";
+                    cpattern = null;
+                    x--;
                 }
                 else current += c.ToString();
             }
@@ -65,7 +82,8 @@ namespace TaskLang
             tokens.Add(WordToToken(current));
             return tokens.ToArray();
         }
-        static Token WordToToken(string word)
+        //Converts single word into token
+        private static Token WordToToken(string word)
         {
             if (double.TryParse(word, out double d)) return new Token(TokenType.Number, d.ToString());
             else if (word.StartsWith("\"") && word.EndsWith("\"")) //TODO: better string parsing
@@ -92,7 +110,7 @@ namespace TaskLang
             else if (word == "else") return new Token(TokenType.ElseKey);
             else if (word == "true") return new Token(TokenType.TrueKey);
             else if (word == "false") return new Token(TokenType.FalseKey);
-            else if (WordPattern.IsMatch(word)) return new Token(TokenType.Word, word);
+            else if (WordPattern(word)) return new Token(TokenType.Word, word);
             else return new Token(TokenType.Error, word);
         }
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaskLang
+namespace TaskLang.Context
 {
     public static class Contextualizer
     {

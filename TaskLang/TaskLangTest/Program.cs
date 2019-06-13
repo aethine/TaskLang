@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
-using TaskLang;
+using TaskLang.Tokens;
+using TaskLang.Tokenizer;
+using TaskLang.Errors;
 
 namespace TaskLangTest
 {
@@ -8,7 +10,12 @@ namespace TaskLangTest
     {
         static void Main(string[] args)
         {
-            string[] abc = { "exec \"server.jar\"", "cmd \"echo\"", "abc a t ->", "|return a + t" };
+            string[] abc = {
+                "exec \"server.jar\"",
+                "cmd \"echo hello\"",
+                "abc a t ->",
+                "|return a+t"
+                };
             Token[] tokens = Tokenizer.LinesToTokens(abc);
             var errors = ErrorChecking.FirstPass(tokens);
             if (errors.Count > 0)

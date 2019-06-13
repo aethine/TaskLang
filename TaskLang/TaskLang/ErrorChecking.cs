@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TaskLang.Tokens;
 
-namespace TaskLang
+namespace TaskLang.Errors
 {
     public static class ErrorChecking
     {

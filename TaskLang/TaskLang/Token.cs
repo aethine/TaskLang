@@ -1,4 +1,4 @@
-﻿namespace TaskLang
+﻿namespace TaskLang.Tokens
 {
     public enum TokenType
     {
@@ -43,4 +43,5 @@
             return Type.ToString() + (Info == "" ? "" : $":{Info}");
         }
     }
+    public delegate bool Pattern(string input);
 }
