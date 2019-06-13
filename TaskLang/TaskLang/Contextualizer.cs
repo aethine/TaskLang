@@ -70,8 +70,15 @@ namespace TaskLang.Context
                 {
                     result.Add(new ExpressionContext(new Expression(ExpressionType.FunctionDefinition, line, lineNum), currentContext));
                 }
-
-
+                else if (Array.Exists(line, t => new TokenType[] { TokenType.ElifKey, TokenType.ElseKey, TokenType.ForKey, TokenType.IfKey, TokenType.WhileKey }.Contains(t.Type))) //control
+                {
+                    result.Add(new ExpressionContext(new Expression(ExpressionType.Control, line, lineNum), currentContext));
+                }
+                else //func call
+                {
+                    if (Array.Exists(line, t => t.Type != TokenType.NewLine))
+                        result.Add(new ExpressionContext(new Expression(ExpressionType.FunctionCall, line, lineNum), currentContext));
+                }
                 if (Array.Exists(line, t => t.Type == TokenType.NewLine)) lineNum++;
             }
             return result.ToArray();
@@ -87,6 +94,11 @@ namespace TaskLang.Context
         {
             this.Expression = Expression;
             this.Context = Context;
+        }
+
+        public override string ToString()
+        {
+            return $"#{Expression.LineNumber} [{Expression.Type}] {string.Join(" ", Expression.Tokens.Select(t => t.ToString()))}";
         }
     }
 
