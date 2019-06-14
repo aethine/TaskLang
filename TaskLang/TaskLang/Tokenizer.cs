@@ -9,10 +9,11 @@ namespace TaskLang.Tokenizer
     public static class Tokenizer
     {
         public static readonly string[] Operators = { "+", "-", "/", "*", "and", "or", "xor", "not" };
-        public static readonly Pattern WordPattern = s => Regex.IsMatch(s, "^[a-zA-Z][a-zA-Z0-9_]*$");
+        public static readonly Pattern WordPattern = s => Regex.IsMatch(s, "^[a-zA-Z_][a-zA-Z0-9_]*$");
         public static readonly Pattern NumberPattern = s => double.TryParse(s, out _);
         public static readonly Pattern StringPattern = s => Regex.IsMatch(s, "^\"([^\"\\\\]+|\\\\.)*\"?$");
-        public static readonly Pattern SymbolPattern = s => Regex.IsMatch(s, @"^[!@#$%^&*()\[\]{}\\|;:<>,/?`~\-=+]+$");
+        public static readonly Pattern SymbolPattern = s => Regex.IsMatch(s, @"^[!@#$%^&*\[\]{}\\|;:<>,/?`~\-=+]+$");
+        public static readonly Pattern ParenthesesPattern = s => Regex.IsMatch(s, "^[()]+$");
         public static readonly Pattern[] AllPatterns = { WordPattern, NumberPattern, StringPattern, SymbolPattern };
 
         public static Token[] LinesToTokens(string[] lines)
@@ -39,7 +40,7 @@ namespace TaskLang.Tokenizer
                     if (c == '#') break; //comment
                     else current += c.ToString();
                 }
-                if (!String.IsNullOrWhiteSpace(current)) result.Add(current);
+                if (!string.IsNullOrWhiteSpace(current)) result.Add(current);
                 current = "";
             }
             return result.ToArray();
@@ -98,18 +99,20 @@ namespace TaskLang.Tokenizer
             else if (word == ";") return new Token(TokenType.Semicolon);
             else if (word == "(") return new Token(TokenType.LeftParen);
             else if (word == ")") return new Token(TokenType.RightParen);
-            else if (word == "return") return new Token(TokenType.ReturnKey);
-            else if (word == "while") return new Token(TokenType.WhileKey);
-            else if (word == "for") return new Token(TokenType.ForKey);
-            else if (word == "in") return new Token(TokenType.InKey);
-            else if (word == "break") return new Token(TokenType.BreakKey);
-            else if (word == "var") return new Token(TokenType.VarKey);
-            else if (word == "if") return new Token(TokenType.IfKey);
-            else if (word == "then") return new Token(TokenType.ThenKey);
-            else if (word == "elif") return new Token(TokenType.ElifKey);
-            else if (word == "else") return new Token(TokenType.ElseKey);
-            else if (word == "true") return new Token(TokenType.TrueKey);
-            else if (word == "false") return new Token(TokenType.FalseKey);
+            else if (word == "()") return new Token(TokenType.Unit);
+            else if (word == "return") return new Token(TokenType.Return);
+            else if (word == "while") return new Token(TokenType.While);
+            else if (word == "for") return new Token(TokenType.For);
+            else if (word == "in") return new Token(TokenType.In);
+            else if (word == "break") return new Token(TokenType.Break);
+            else if (word == "var") return new Token(TokenType.Var);
+            else if (word == "if") return new Token(TokenType.If);
+            else if (word == "then") return new Token(TokenType.Then);
+            else if (word == "elif") return new Token(TokenType.Elif);
+            else if (word == "else") return new Token(TokenType.Else);
+            else if (word == "true") return new Token(TokenType.True);
+            else if (word == "false") return new Token(TokenType.False);
+            else if (word == "nil") return new Token(TokenType.Nil);
             else if (WordPattern(word)) return new Token(TokenType.Word, word);
             else return new Token(TokenType.Error, word);
         }

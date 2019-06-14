@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Linq;
 using TaskLang.Tokens;
 using TaskLang.Tokenizer;
 using TaskLang.Errors;
 using TaskLang.Context;
+using TaskLang.Compile;
 
 namespace TaskLangTest
 {
@@ -12,7 +14,8 @@ namespace TaskLangTest
         static void Main(string[] args)
         {
             string[] lines;
-            if (args.Length > 0) lines = string.Join(' ', args).Split('\n');
+            args = new string[] { "#hi\nvar x = 0\nx = \"hello\" * true\nabc a ->\n| return a\nif false then\n|cmd \"echo hi\"\n else abc 0 + 5" };
+            if (args.Length > 0) lines = Regex.Split(string.Join(' ', args), @"[\r\n]");
             else lines = new string[] { "exec \"server.jar\"", "cmd \"echo hello\"", "abc a t ->", "|return a+t" };
 
             Token[] tokens = Tokenizer.LinesToTokens(lines);
@@ -34,12 +37,10 @@ namespace TaskLangTest
             if (Array.Exists(contexts, c => c.Expression is ExpressionError))
             {
                 foreach (ExpressionError err in contexts.Where(c => c.Expression is ExpressionError).Select(c => (ExpressionError)c.Expression)) Console.WriteLine($"- On line {err.LineNumber}: {err.Error}");
+                return;
             }
-            else
-            {
-                Console.WriteLine("Classification success!");
-                foreach (ExpressionContext e in contexts) Console.WriteLine(e);
-            }
+            Console.WriteLine("Classification success!");
+            foreach (string s in Compiler.Compile(contexts)) Console.WriteLine(s);
         }
     }
 }

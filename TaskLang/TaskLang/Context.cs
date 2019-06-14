@@ -38,9 +38,23 @@ namespace TaskLang.Context
         }
         public bool AssignVariable(string name, string newValue)
         {
-            if (!Variables.ContainsKey(name)) return false;
-            Variables[name] = newValue;
-            return true;
+            Context c = FindVarContext(name);
+            if (c != null)
+            {
+                c.Variables[name] = newValue;
+                return true;
+            }
+            else return false;
+        }
+        public string FindVariable(string name)
+        {
+            return FindVarContext(name)?.Variables[name];
+        }
+        public Context FindVarContext(string name)
+        {
+            if (Variables.ContainsKey(name)) return this;
+            else if (Parent != null) return Parent.FindVarContext(name);
+            else return null;
         }
     }
 }

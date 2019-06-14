@@ -37,7 +37,7 @@ namespace TaskLang.Context
             {
                 if (Array.Exists(line, t => t.Type == TokenType.Assign)) //contains =
                 {
-                    if (Array.Exists(line, t => t.Type == TokenType.VarKey)) //var declaration
+                    if (Array.Exists(line, t => t.Type == TokenType.Var)) //var declaration
                     {
                         //format [var, name, =, value]
                         if (currentContext.DeclareVariable(line[1].Info))
@@ -62,20 +62,23 @@ namespace TaskLang.Context
                         }
                     }
                 }
-                else if (Array.Exists(line, t => t.Type == TokenType.ReturnKey)) //return
+                else if (Array.Exists(line, t => t.Type == TokenType.Return)) //return
                 {
+                    //format [return, expr]
                     result.Add(new ExpressionContext(new Expression(ExpressionType.Return, line, lineNum), currentContext));
                 }
                 else if (Array.Exists(line, t => t.Type == TokenType.Arrow)) //func definition
                 {
+                    //format [name, args..., ->]
                     result.Add(new ExpressionContext(new Expression(ExpressionType.FunctionDefinition, line, lineNum), currentContext));
                 }
-                else if (Array.Exists(line, t => new TokenType[] { TokenType.ElifKey, TokenType.ElseKey, TokenType.ForKey, TokenType.IfKey, TokenType.WhileKey }.Contains(t.Type))) //control
+                else if (Array.Exists(line, t => new TokenType[] { TokenType.Elif, TokenType.Else, TokenType.For, TokenType.If, TokenType.While }.Contains(t.Type))) //control
                 {
                     result.Add(new ExpressionContext(new Expression(ExpressionType.Control, line, lineNum), currentContext));
                 }
                 else //func call
                 {
+                    //format [name, args...]
                     if (Array.Exists(line, t => t.Type != TokenType.NewLine))
                         result.Add(new ExpressionContext(new Expression(ExpressionType.FunctionCall, line, lineNum), currentContext));
                 }
@@ -101,5 +104,4 @@ namespace TaskLang.Context
             return $"#{Expression.LineNumber} [{Expression.Type}] {string.Join(" ", Expression.Tokens.Select(t => t.ToString()))}";
         }
     }
-
 }
